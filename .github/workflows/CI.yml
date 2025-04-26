@@ -26,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SolutionName: Paulov.Tarkov.Minimal
-      ProjectClient: Paulov.Tarkov.Minimal.csproj
+      SolutionName: Paulov.Tarkov.Local
+      ProjectClient: Paulov.Tarkov.Local.csproj
 
     steps:
       - name: Checkout
