@@ -11,7 +11,7 @@
 </div>
 
 ## About The Project
-This project is a BepInEx 5 module designed to install into Escape from Tarkov and fixes client side issues by forcing local raids
+This project is a BepInEx 5 module designed to install into Escape from Tarkov and fixes client side issues
 
 ## Installation
 - [Install BepInEx 5](https://github.com/BepInEx/BepInEx/releases) into your copy of Escape of Tarkov
