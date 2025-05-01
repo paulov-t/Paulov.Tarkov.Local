@@ -47,8 +47,8 @@ namespace Paulov.Tarkov.Local.Patches
             CodeMatcher matcher = new CodeMatcher(codes, generator).Start();
 
             //Generate labels
-            matcher.CreateLabel(out Label brFalseLabel);
-            matcher.CreateLabel(out Label brLabel);
+            Label brFalseLabel = generator.DefineLabel();
+            Label brLabel = generator.DefineLabel();
             
             //Match start of get_Profile call and remove relevant instructions.
             matcher.MatchForward(false,
@@ -71,7 +71,7 @@ namespace Paulov.Tarkov.Local.Patches
                 HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, BackendProfileInterfaceType, "get_Profile")),
                 HarmonyPatchManager.ParseCode(new Code(OpCodes.Br, brLabel)),
                 HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Callvirt, brFalseLabel, BackendProfileInterfaceType, "get_ProfileOfPet")),
-                HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Stfld, brLabel, Plugin.TarkovApplicationType.GetNestedTypes(BindingFlags.Public).Single(IsTargetNestedType), "profile")),
+                HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Stfld, brLabel, Plugin.TarkovApplicationType.GetNestedTypes(BindingFlags.Public).Single(IsTargetNestedType), "profile"))
             ];
             
             //Insert new instructions and return
