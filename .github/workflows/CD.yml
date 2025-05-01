@@ -1,6 +1,6 @@
 # Testing out the Linux Build to compare against Windows
 
-name: CI
+name: CD
 
 on:
   push:
