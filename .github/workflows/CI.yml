@@ -1,6 +1,6 @@
 # Testing out the Linux Build to compare against Windows
 
-name: Continuous Integration
+name: CI
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build-SIT:
+  Build:
 
     strategy:
       matrix:
@@ -33,8 +33,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          lfs: true
+          submodules: true
           fetch-depth: 0
-
+          
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
