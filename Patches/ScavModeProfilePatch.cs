@@ -43,8 +43,7 @@ namespace Paulov.Tarkov.Local.Patches
 
         public static IEnumerable<CodeInstruction> TranspilerMethod(ILGenerator generator, IEnumerable<CodeInstruction> instructions)
         {
-            List<CodeInstruction> codes = instructions.ToList();
-            CodeMatcher matcher = new CodeMatcher(codes, generator).Start();
+            CodeMatcher matcher = new CodeMatcher(instructions, generator).Start();
 
             //Generate labels
             Label brFalseLabel = generator.DefineLabel();
