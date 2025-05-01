@@ -52,11 +52,10 @@ jobs:
       - name: Get version from DLL
         id: extract-version
         run: |
-          echo $([System.DateTime]::Now.ToString("yyyy.MM.dd.HH"))
-          echo "{VERSION}={$([System.DateTime]::Now.ToString("yyyy.MM.dd.HH"))}" >> $GITHUB_OUTPUT
+          echo v=$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))
+          echo "VERSION=$v" >> $GITHUB_OUTPUT
         #  $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("${{ env.DllName }}\${{ env.DllName }}.dll").ProductVersion
         #  echo "::set-output name=VERSION::$version"
-        
 
       - name: Display Version in Logs
         run: echo "The extracted version is ${{ steps.extract-version.outputs.VERSION }}"
