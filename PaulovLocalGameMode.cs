@@ -35,7 +35,7 @@ namespace Paulov.Tarkov.Local
             , ISession backEndSession
             , TimeSpan sessionTime
             , object metricsEvents
-            , GClass2467 metricsCollector
+            , GClass2474 metricsCollector
             , LocalRaidSettings raidSettings)
         {
             Logger = BepInEx.Logging.Logger.CreateLogSource(nameof(PaulovLocalGameMode));
@@ -43,7 +43,7 @@ namespace Paulov.Tarkov.Local
 
             PaulovLocalGameMode game =
                 smethod_0<PaulovLocalGameMode>(inputTree, profile, gameWorld, backendDateTime, insurance, gameUI, location, timeAndWeather, wavesSettings, dateTime
-                , callback, fixedDeltaTime, updateQueue, backEndSession, new TimeSpan?(sessionTime), metricsEvents as GClass2478, metricsCollector, raidSettings);
+                , callback, fixedDeltaTime, updateQueue, backEndSession, new TimeSpan?(sessionTime), metricsEvents as GClass2485, metricsCollector, raidSettings);
 
             return game;
         }
