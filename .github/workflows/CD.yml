@@ -1,0 +1,72 @@
+# Testing out the Linux Build to compare against Windows
+
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  BuildAndPreRelease:
+
+    strategy:
+      matrix:
+        configuration: [Debug]
+
+    runs-on: windows-latest
+
+    env:
+      SolutionName: Paulov.Tarkov.Local
+      ProjectClient: Paulov.Tarkov.Local.csproj
+      DllName: Paulov.Tarkov.Local
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          submodules: true
+          fetch-depth: 0
+          
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      # Restore all projects
+      - name: dotnet Restore
+        run: dotnet restore
+
+       # Build the project
+      - name: Build
+        run: |
+          dotnet build ${{ env.ProjectClient }} -c Release -o ${{ env.DllName }}
+
+      - name: Get version from DLL
+        id: extract-version
+        run: |
+          $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("${{ env.DllName }}\${{ env.DllName }}.dll").ProductVersion
+          echo "::set-output name=VERSION::$version"
+
+      - name: Display Version in Logs
+        run: echo "The extracted version is ${{ steps.extract-version.outputs.VERSION }}"
+  
+      - name: Zip remaining files
+        run: |
+            Compress-Archive -Path "${{ env.DllName }}\${{ env.DllName }}.dll" -DestinationPath ${{ env.DllName }}.zip
+   
+      # Create release as draft from the compressed file
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ matrix.configuration == 'Release' }}
+        with:
+            draft: true
+            generate_release_notes: true
+            files: ${{ env.DllName }}.zip
+            tag_name: Paulov.Tarkov.Local-${{ steps.extract-version.outputs.VERSION }}
