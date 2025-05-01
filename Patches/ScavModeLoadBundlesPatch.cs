@@ -37,6 +37,7 @@ namespace Paulov.Tarkov.Local.Patches
             return new HarmonyMethod(this.GetType().GetMethod(nameof(TranspilerMethod), BindingFlags.Public | BindingFlags.Static));
         }
 
+        //TODO: There is massive code duplication between this and the ScavModeProfilePatch. Look into how to reduce this.
         public static IEnumerable<CodeInstruction> TranspilerMethod(ILGenerator generator, IEnumerable<CodeInstruction> instructions)
         {
             CodeMatcher matcher = new CodeMatcher(instructions, generator).Start();
