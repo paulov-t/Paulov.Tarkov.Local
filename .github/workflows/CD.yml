@@ -51,7 +51,9 @@ jobs:
 
       - name: Get version from DLL
         id: extract-version
-        run: echo "{VERSION}={$([System.DateTime]::Now.ToString("yyyy.MM.dd.HH"))}" >> $GITHUB_OUTPUT
+        run: |
+          echo $([System.DateTime]::Now.ToString("yyyy.MM.dd.HH"))
+          echo "{VERSION}={$([System.DateTime]::Now.ToString("yyyy.MM.dd.HH"))}" >> $GITHUB_OUTPUT
         #  $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("${{ env.DllName }}\${{ env.DllName }}.dll").ProductVersion
         #  echo "::set-output name=VERSION::$version"
         
@@ -70,4 +72,5 @@ jobs:
             draft: true
             generate_release_notes: true
             files: ${{ env.DllName }}.zip
+            token: ${{ secrets.PAT_KEY }}
             tag_name: Paulov.Tarkov.Local-${{ steps.extract-version.outputs.VERSION }}
