@@ -52,8 +52,8 @@ jobs:
         id: extract-version
         shell: pwsh
         run: |
-          v = $([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))
-          echo v
+          $v = $([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))
+          echo $v
           echo VERSION=$v >> $env:GITHUB_OUTPUT
         #  $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("${{ env.DllName }}\${{ env.DllName }}.dll").ProductVersion
         #  echo "::set-output name=VERSION::$version"
