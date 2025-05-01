@@ -21,7 +21,6 @@ jobs:
       SolutionName: Paulov.Tarkov.Local
       ProjectClient: Paulov.Tarkov.Local.csproj
       DllName: Paulov.Tarkov.Local
-      Version: 0
 
     steps:
       - name: Checkout
@@ -51,9 +50,10 @@ jobs:
 
       - name: Get version from DLL
         id: extract-version
+        shell: pwsh
         run: |
           echo v=$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))
-          echo "VERSION=$v" >> $GITHUB_OUTPUT
+          echo VERSION=$v >> $env:GITHUB_OUTPUT
         #  $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("${{ env.DllName }}\${{ env.DllName }}.dll").ProductVersion
         #  echo "::set-output name=VERSION::$version"
 
