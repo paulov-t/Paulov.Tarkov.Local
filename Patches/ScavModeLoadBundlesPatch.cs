@@ -37,48 +37,41 @@ namespace Paulov.Tarkov.Local.Patches
             return new HarmonyMethod(this.GetType().GetMethod(nameof(TranspilerMethod), BindingFlags.Public | BindingFlags.Static));
         }
 
+        //TODO: There is massive code duplication between this and the ScavModeProfilePatch. Look into how to reduce this.
         public static IEnumerable<CodeInstruction> TranspilerMethod(ILGenerator generator, IEnumerable<CodeInstruction> instructions)
         {
-            var codes = new List<CodeInstruction>(instructions);
+            CodeMatcher matcher = new CodeMatcher(instructions, generator).Start();
 
-            var searchCode = new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(BackendProfileInterfaceType, "get_Profile"));
-            var searchIndex = -1;
+            //Generate labels
+            Label brFalseLabel = generator.DefineLabel();
+            Label brLabel = generator.DefineLabel();
 
-            for (var i = 0; i < codes.Count; i++)
-            {
-                if (codes[i].opcode == searchCode.opcode && codes[i].operand == searchCode.operand)
-                {
-                    searchIndex = i;
-                    break;
-                }
-            }
+            //Match start of get_Profile call and remove relevant instructions.
+            matcher.MatchForward(false,
+                new CodeMatch(OpCodes.Ldloc_1),
+                new CodeMatch(OpCodes.Call),
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(BackendProfileInterfaceType, "get_Profile"))
+            ).ThrowIfInvalid("Could not find get_Session or surrounding OpCodes")
+                .Advance(1).RemoveInstructions(3);
+            //We match ldloc.1 and skip past it so we can reuse it.
 
-            if (searchIndex == -1)
-            {
-                return instructions;
-            }
+            //Generate new instructions to replace the original get_Profile call.
+            IEnumerable<CodeInstruction> codesToAdd =
+            [
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Call, typeof(ClientApplication<ISession>), "get_Session")),
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldloc_1)),
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldfld, Plugin.TarkovApplicationType, "_raidSettings")),
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, Plugin.RaidSettingsType, "get_IsPmc")),
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Brfalse, brFalseLabel)),
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, BackendProfileInterfaceType, "get_Profile")),
+                HarmonyPatchManager.ParseCode(new Code(OpCodes.Br, brLabel)),
+                HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Callvirt, brFalseLabel, BackendProfileInterfaceType, "get_ProfileOfPet")),
+                HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Ldc_I4_1, brLabel))
+            ];
 
-            searchIndex -= 2;
-
-            var brFalseLabel = generator.DefineLabel();
-            var brLabel = generator.DefineLabel();
-
-            List<HarmonyLib.CodeInstruction> newCodes = new();
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldloc_1)));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Call, typeof(ClientApplication<ISession>), "get_Session")));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldloc_1)));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldfld, typeof(TarkovApplication), "_raidSettings")));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, typeof(RaidSettings), "get_IsPmc")));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Brfalse, brFalseLabel)));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, BackendProfileInterfaceType, "get_Profile")));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new Code(OpCodes.Br, brLabel)));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Callvirt, brFalseLabel, BackendProfileInterfaceType, "get_ProfileOfPet")));
-            newCodes.Add(HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Ldc_I4_1, brLabel)));
-
-            codes.RemoveRange(searchIndex, 4);
-            codes.InsertRange(searchIndex, newCodes);
-
-            return codes.AsEnumerable();
+            //Insert new instructions and return
+            matcher.InsertAndAdvance(codesToAdd);
+            return matcher.InstructionEnumeration();
         }
     }
 }
