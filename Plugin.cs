@@ -7,10 +7,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Paulov.Bepinex.Framework;
 
 namespace Paulov.Tarkov.Local;
 
 [BepInDependency("Paulov.Tarkov.Minimal", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("Paulov.Bepinex.Framework", BepInDependency.DependencyFlags.HardDependency)]
 [BepInPlugin("Paulov.Tarkov.Local", "Paulov.Tarkov.Local", "2025.02.02")]
 public class Plugin : BaseUnityPlugin
 {
@@ -77,17 +79,7 @@ public class Plugin : BaseUnityPlugin
 
         EftTypes = typeof(AbstractGame).Assembly.GetTypes().OrderBy(t => t.Name).ToArray();
 
-
-
-        // Create HarmonyPatchManager and Enable the Patches
-        //var hpm = new HarmonyPatchManager("Paulov's Main Harmony Manager");
-        //hpm.EnablePatches();
-
-        var assembly = Assembly.LoadFile(Path.Combine(ReflectionHelpers.GetBaseDirectory(), "BepInEx", "plugins", "Paulov.Bepinex.Framework.dll"));
-        if (Assembly.UnsafeLoadFrom(assembly.Location) != null)
-            Logger.LogInfo("Loaded Paulov.Bepinex.Framework.dll");
-
-        var hpm2 = new Paulov.Bepinex.Framework.HarmonyPatchManager("Paulov's Main Harmony Manager");
+        HarmonyPatchManager hpm2 = new("Paulov's Main Harmony Manager", new LocalPatchProvider());
         hpm2.EnablePatches();
     }
 }
