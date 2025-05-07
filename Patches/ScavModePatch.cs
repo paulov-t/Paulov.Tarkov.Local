@@ -37,25 +37,5 @@ namespace Paulov.Tarkov.Local.Patches
             ___raidSettings_0.BotSettings = ___raidSettings_1.BotSettings;
             ___raidSettings_1 = ___raidSettings_0.Clone();
         }
-
-        public HarmonyMethod GetPostfixMethod()
-        {
-            return null;
-        }
-
-        public HarmonyMethod GetTranspilerMethod()
-        {
-            return null;
-        }
-
-        public HarmonyMethod GetFinalizerMethod()
-        {
-            return null;
-        }
-
-        public HarmonyMethod GetILManipulatorMethod()
-        {
-            return null;
-        }
     }
 }

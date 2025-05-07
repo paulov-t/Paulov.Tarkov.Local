@@ -6,14 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Paulov.Bepinex.Framework;
 
 namespace Paulov.Tarkov.Local.Patches
 {
     public class ScavModeProfilePatch : NullPaulovHarmonyPatch
     {
         public static Type BackendProfileInterfaceType { get; private set; }
-
-
+        
         public override MethodBase GetMethodToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(ScavModeProfilePatch)}.GetMethodToPatch");
@@ -62,15 +62,15 @@ namespace Paulov.Tarkov.Local.Patches
             //Generate new instructions to replace the original get_Profile call.
             IEnumerable<CodeInstruction> codesToAdd =
             [
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Call, typeof(ClientApplication<ISession>), "get_Session")),
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldloc_1)),
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Ldfld, Plugin.TarkovApplicationType, "_raidSettings")),
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, Plugin.RaidSettingsType, "get_IsPmc")),
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Brfalse, brFalseLabel)),
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Callvirt, BackendProfileInterfaceType, "get_Profile")),
-                HarmonyPatchManager.ParseCode(new Code(OpCodes.Br, brLabel)),
-                HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Callvirt, brFalseLabel, BackendProfileInterfaceType, "get_ProfileOfPet")),
-                HarmonyPatchManager.ParseCode(new CodeWithLabel(OpCodes.Stfld, brLabel, Plugin.TarkovApplicationType.GetNestedTypes(BindingFlags.Public).Single(IsTargetNestedType), "profile"))
+                TranspilerHelper.ParseCode(new Code(OpCodes.Call, "get_Session", typeof(ClientApplication<ISession>))),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Ldloc_1)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Ldfld, "_raidSettings", Plugin.TarkovApplicationType)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Callvirt, "get_IsPmc", Plugin.RaidSettingsType)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Brfalse, brFalseLabel)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Callvirt, "get_Profile", BackendProfileInterfaceType)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Br, brLabel)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Callvirt, "get_ProfileOfPet", BackendProfileInterfaceType, label: brFalseLabel)),
+                TranspilerHelper.ParseCode(new Code(OpCodes.Stfld, "profile", Plugin.TarkovApplicationType.GetNestedTypes(BindingFlags.Public).Single(IsTargetNestedType), label: brLabel))
             ];
             
             //Insert new instructions and return
