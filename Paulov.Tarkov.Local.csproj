@@ -46,9 +46,6 @@
 		<HintPath>References\Comfort.Unity.dll</HintPath>
 		<Private>False</Private>
 	</Reference>
-	<Reference Include="Paulov.Bepinex.Framework">
-	  <HintPath>..\Paulov.Tarkov.Minimal\References\Paulov.Bepinex.Framework.dll</HintPath>
-	</Reference>
 	<Reference Include="Sirenix.Serialization">
 	  <HintPath>References\Sirenix.Serialization.dll</HintPath>
 	  <Private>False</Private>
