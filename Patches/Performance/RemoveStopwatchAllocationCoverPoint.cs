@@ -10,9 +10,9 @@ namespace Paulov.Tarkov.Local.Patches.Performance;
 
 public class RemoveStopwatchAllocationCoverPoint : NullPaulovHarmonyPatch
 {
-    public override MethodBase GetMethodToPatch()
+    public override IEnumerable<MethodBase> GetMethodsToPatch()
     {
-        return Plugin.EftTypes.Single(x => x.Name == "CoverPointMaster").GetMethod("method_0", BindingFlags.Public | BindingFlags.Instance);
+        yield return Plugin.EftTypes.Single(x => x.Name == "CoverPointMaster").GetMethod("method_0", BindingFlags.Public | BindingFlags.Instance);
     }
 
     public override HarmonyMethod GetTranspilerMethod()
