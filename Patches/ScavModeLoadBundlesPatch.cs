@@ -15,7 +15,7 @@ namespace Paulov.Tarkov.Local.Patches
     {
         public static Type BackendProfileInterfaceType { get; private set; }
 
-        public override MethodBase GetMethodToPatch()
+        public override IEnumerable<MethodBase> GetMethodsToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(ScavModeLoadBundlesPatch)}.GetMethodToPatch");
 
@@ -30,7 +30,7 @@ namespace Paulov.Tarkov.Local.Patches
             var method = desiredType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .FirstOrDefault(x => x.Name == "MoveNext");
 
-            return method;
+            yield return method;
         }
 
         public override HarmonyMethod GetTranspilerMethod()

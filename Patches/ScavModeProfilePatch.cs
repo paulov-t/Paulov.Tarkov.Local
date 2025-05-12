@@ -14,7 +14,7 @@ namespace Paulov.Tarkov.Local.Patches
     {
         public static Type BackendProfileInterfaceType { get; private set; }
         
-        public override MethodBase GetMethodToPatch()
+        public override IEnumerable<MethodBase> GetMethodsToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(ScavModeProfilePatch)}.GetMethodToPatch");
 
@@ -32,7 +32,7 @@ namespace Paulov.Tarkov.Local.Patches
 
             BackendProfileInterfaceType = Plugin.EftTypes.Single(x => x.GetMethods().Length == 2 && x.GetMethods().Select(y => y.Name).Contains("get_Profile") && x.IsInterface);
 
-            return desiredMethod;
+            yield return desiredMethod;
         }
 
 

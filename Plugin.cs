@@ -80,6 +80,6 @@ public class Plugin : BaseUnityPlugin
         EftTypes = typeof(AbstractGame).Assembly.GetTypes().OrderBy(t => t.Name).ToArray();
 
         HarmonyPatchManager hpm2 = new("Paulov's Main Harmony Manager", new LocalPatchProvider());
-        hpm2.EnablePatches();
+        hpm2.EnableAll();
     }
 }

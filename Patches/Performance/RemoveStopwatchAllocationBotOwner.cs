@@ -10,9 +10,9 @@ namespace Paulov.Tarkov.Local.Patches.Performance;
 
 public class RemoveStopwatchAllocationBotOwner : NullPaulovHarmonyPatch
 {
-    public override MethodBase GetMethodToPatch()
+    public override IEnumerable<MethodBase> GetMethodsToPatch()
     {
-        return Plugin.EftTypes.Where(x => x.GetInterfaces().Any(y => y.Name == "IPlayer"))
+        yield return Plugin.EftTypes.Where(x => x.GetInterfaces().Any(y => y.Name == "IPlayer"))
             .Single(x => x.Name == "BotOwner")
             .GetMethods().Single(x => x.Name == "UpdateManual");
     }

@@ -23,7 +23,7 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
     {
     }
 
-    public override MethodBase GetMethodToPatch()
+    public override IEnumerable<MethodBase> GetMethodsToPatch()
     {
         Plugin.Logger.LogDebug($"{nameof(BotLoadingPatch)}.GetMethodToPatch");
 
@@ -39,7 +39,7 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
 
         Plugin.Logger.LogDebug($"{nameof(BotLoadingPatch)}.GetMethodToPatch:{method.DeclaringType}.{method}");
 
-        return method;
+        yield return method;
 
     }
 
