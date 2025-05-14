@@ -71,4 +71,4 @@ jobs:
             generate_release_notes: true
             files: ${{ env.DllName }}.zip
             token: ${{ secrets.PAT_KEY }}
-            tag_name: Paulov.Tarkov.Local-${{ steps.extract-version.outputs.VERSION }}
+            tag_name: v${{ steps.extract-version.outputs.VERSION }}
