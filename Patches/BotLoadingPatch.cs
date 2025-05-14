@@ -1,21 +1,16 @@
 ﻿using Comfort.Common;
 using EFT;
 using HarmonyLib;
-using Paulov.Bepinex.Framework;
 using Paulov.Bepinex.Framework.Patches;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Paulov.Tarkov.Local.Patches;
-//public class BotLoadingPatch : NullHarmonyPatch
 public class BotLoadingPatch : NullPaulovHarmonyPatch
-//public class BotLoadingPatch : NullHarmonyPatch, Paulov.Bepinex.Framework.IPaulovHarmonyPatch
 {
     private static MethodInfo methodPrepareToLoadBackend;
     private static MethodInfo methodGetNewProfile;
@@ -143,9 +138,9 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
         {
             _profile = task.Result;
 
-            var loadTask = Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(
-                PoolManager.PoolsCategory.Raid,
-                PoolManager.AssemblyType.Local,
+            var loadTask = Singleton<PoolManagerClass>.Instance.LoadBundlesAndCreatePools(
+                PoolManagerClass.PoolsCategory.Raid,
+                PoolManagerClass.AssemblyType.Local,
                 _profile.GetAllPrefabPaths(false).Where(x => !x.IsNullOrEmpty()).ToArray(),
                 JobPriority.General,
                 null,
