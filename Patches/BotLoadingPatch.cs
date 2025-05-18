@@ -51,35 +51,6 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
     }
     public static bool PrefixMethod(ref Task<Profile> __result, BotsPresets __instance, List<Profile> ___list_0, object data, ref bool withDelete)
     {
-        //var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-        //var continuation = new BundleLoader(taskScheduler);
-
-        //DebugBotData.Instance.useThisData = false;
-        //DebugBotData.Instance.localProfiles = false;
-
-        //if (methodGetNewProfile == null)
-        //    methodGetNewProfile = ReflectionHelpers
-        //        .GetAllMethodsForType(__instance.GetType(), false, true)
-        //        .Single(x => x.Name == "GetNewProfile" && x.GetParameters().Length == 2);
-
-
-        //if (methodPrepareToLoadBackend == null)
-        //    methodPrepareToLoadBackend = ReflectionHelpers.GetAllMethodsForType(data.GetType()).Single(x => x.Name == "PrepareToLoadBackend" && x.GetParameters().Length > 0);
-
-        //var sourceWaves = methodPrepareToLoadBackend.Invoke(data, new object[1] { 1 }) as WaveInfo[];
-        //var numberOfWaves = sourceWaves.Length;
-        //var source = sourceWaves.Take(new Random().Next(1, numberOfWaves)).ToList();
-
-        ////var taskAwaiter = (Task<Profile>)null;
-        ////var resultOfLoadBots = Plugin.BackEndSession2.LoadBots(source);
-        ////taskAwaiter = resultOfLoadBots.ContinueWith(GetRandomResult, taskScheduler);
-
-        ////__result = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
-        ////return false;
-        //return true;
-
-
-
         try
         {
             __instance.GetNewProfile(data as BotCreationDataClass, true);
@@ -96,7 +67,7 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
             if (methodPrepareToLoadBackend == null)
                 methodPrepareToLoadBackend = ReflectionHelpers.GetAllMethodsForType(data.GetType()).Single(x => x.Name == "PrepareToLoadBackend" && x.GetParameters().Length > 0);
 
-            var sourceWaves = methodPrepareToLoadBackend.Invoke(data, new object[1] { 1 }) as WaveInfo[];
+            var sourceWaves = methodPrepareToLoadBackend.Invoke(data, new object[1] { 1 }) as WaveInfoClass[];
 
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             var taskAwaiter = (Task<Profile>)null;

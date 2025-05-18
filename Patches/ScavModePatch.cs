@@ -1,11 +1,8 @@
 ﻿using EFT;
 using HarmonyLib;
 using Paulov.Bepinex.Framework.Patches;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Paulov.Tarkov.Local.Patches
 {
@@ -18,7 +15,7 @@ namespace Paulov.Tarkov.Local.Patches
         {
             Plugin.Logger.LogDebug($"{nameof(ScavModePatch)}.GetMethodToPatch");
 
-            yield return AccessTools.Method(typeof(MainMenuController), nameof(MainMenuController.method_24));
+            yield return AccessTools.Method(typeof(MainMenuControllerClass), nameof(MainMenuControllerClass.method_24));
         }
 
         public override HarmonyMethod GetPrefixMethod()
@@ -26,7 +23,7 @@ namespace Paulov.Tarkov.Local.Patches
             return new HarmonyMethod(this.GetType().GetMethod(nameof(PrefixOverrideMethod), BindingFlags.Public | BindingFlags.Static));
         }
 
-        public static void PrefixOverrideMethod(ref RaidSettings ___raidSettings_0, ref RaidSettings ___raidSettings_1, MainMenuController __instance)
+        public static void PrefixOverrideMethod(ref RaidSettings ___raidSettings_0, ref RaidSettings ___raidSettings_1, MainMenuControllerClass __instance)
         {
             Plugin.Logger.LogDebug($"{nameof(ScavModePatch)}.{nameof(PrefixOverrideMethod)}");
 
