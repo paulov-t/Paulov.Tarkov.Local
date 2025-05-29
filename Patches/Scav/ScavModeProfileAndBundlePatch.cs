@@ -8,7 +8,7 @@ using HarmonyLib;
 using Paulov.Bepinex.Framework;
 using Paulov.Bepinex.Framework.Patches;
 
-namespace Paulov.Tarkov.Local.Patches;
+namespace Paulov.Tarkov.Local.Patches.Scav;
 
 public class ScavModeProfileAndBundlePatch : NullPaulovHarmonyPatch
 {

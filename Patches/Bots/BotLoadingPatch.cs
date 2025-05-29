@@ -9,11 +9,15 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Paulov.Tarkov.Local.Patches;
+namespace Paulov.Tarkov.Local.Patches.Bots;
+
+/// <summary>
+/// The goal of this patch is to ensure profiles are loaded from the server.
+/// NOTE: Need to look and see if this is needed or could be fixed elsewhere.
+/// </summary>
 public class BotLoadingPatch : NullPaulovHarmonyPatch
 {
     private static MethodInfo methodPrepareToLoadBackend;
-    private static MethodInfo methodGetNewProfile;
     public BotLoadingPatch()
     {
     }
@@ -40,57 +44,54 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
 
     private MethodInfo GetExpectedMethod(Type t)
     {
-        return !t.GetMembers().Any() ? null :
-            t.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+        return typeof(BotsPresets)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .First(x => x.Name == "CreateProfile");
     }
 
     public override HarmonyMethod GetPrefixMethod()
     {
-        return new HarmonyMethod(this.GetType().GetMethod(nameof(PrefixMethod), BindingFlags.Public | BindingFlags.Static));
+        return new HarmonyMethod(GetType().GetMethod(nameof(PrefixMethod), BindingFlags.Public | BindingFlags.Static));
     }
-    public static bool PrefixMethod(ref Task<Profile> __result, BotsPresets __instance, List<Profile> ___list_0, object data, ref bool withDelete)
+
+    public static bool PrefixMethod(
+        ref Task<Profile> __result
+        , BotsPresets __instance
+        , BotCreationDataClass data
+        , CancellationToken cancellationToken
+        , ref bool withDelete
+        )
     {
-        try
+        // If the spawn is stopped, we don't want to create a new profile.
+        if (data.SpawnStopped)
         {
-            __instance.GetNewProfile(data as BotCreationDataClass, true);
-        }
-        catch (Exception)
-        {
-            Plugin.Logger.LogError("Error in GetNewProfile");
-            return true;
-        }
-
-        try
-        {
-
-            if (methodPrepareToLoadBackend == null)
-                methodPrepareToLoadBackend = ReflectionHelpers.GetAllMethodsForType(data.GetType()).Single(x => x.Name == "PrepareToLoadBackend" && x.GetParameters().Length > 0);
-
-            var sourceWaves = methodPrepareToLoadBackend.Invoke(data, new object[1] { 1 }) as WaveInfoClass[];
-
-            var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            var taskAwaiter = (Task<Profile>)null;
-            taskAwaiter = Plugin.BackEndSession2.LoadBots(sourceWaves.ToList()).ContinueWith(GetRandomResult, taskScheduler);
-
-            var continuation = new BundleLoader(taskScheduler);
-            __result = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
-
+            Plugin.Logger.LogDebug("Spawn stopped, not creating a new profile.");
+            __result = null;
             return false;
         }
-        catch (Exception ex)
-        {
-            Plugin.Logger.LogError(ex);
-            return true;
-        }
 
+        var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
+        if (methodPrepareToLoadBackend == null)
+            methodPrepareToLoadBackend = ReflectionHelpers.GetAllMethodsForType(data.GetType()).Single(x => x.Name == "PrepareToLoadBackend" && x.GetParameters().Length > 0);
+
+        var sourceWaves = methodPrepareToLoadBackend.Invoke(data, new object[1] { 1 }) as WaveInfoClass[];
+
+        var taskAwaiter = (Task<Profile>)null;
+        taskAwaiter = Plugin.BackEndSession2.LoadBots(sourceWaves.ToList()).ContinueWith(GetRandomResult, taskScheduler);
+
+        var continuation = new BundleLoader(taskScheduler);
+        __result = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
+
+        return false;
     }
+
     private static Profile GetRandomResult(Task<Profile[]> task)
     {
         var result = task.Result;
         var length = task.Result.Length;
-        var v = result[0];//.PickRandom();
-        Plugin.Logger.LogDebug($"Loading {v.Info.Nickname} profile. Role: {v.Info.Settings.Role} Side: {v.Side}");
+        var v = result.PickRandom();
+        Plugin.Logger.LogDebug($"Loading {v.Info.Nickname} profile. Role: {v.Info.Settings.Role} Side: {v.Side}. Difficulty: {v.Info.Settings.BotDifficulty}");
         return v;
     }
 
@@ -115,7 +116,7 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
                 _profile.GetAllPrefabPaths(false).Where(x => !x.IsNullOrEmpty()).ToArray(),
                 JobPriority.General,
                 null,
-                default(CancellationToken));
+                default);
 
             return loadTask.ContinueWith(GetProfile, TaskScheduler);
         }

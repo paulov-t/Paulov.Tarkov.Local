@@ -4,7 +4,7 @@ using Paulov.Bepinex.Framework.Patches;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Paulov.Tarkov.Local.Patches
+namespace Paulov.Tarkov.Local.Patches.Scav
 {
     /// <summary>
     /// This patch simply allows you to click scav and press ready but doesn't fix the fact the game still loads as PMC
@@ -20,7 +20,7 @@ namespace Paulov.Tarkov.Local.Patches
 
         public override HarmonyMethod GetPrefixMethod()
         {
-            return new HarmonyMethod(this.GetType().GetMethod(nameof(PrefixOverrideMethod), BindingFlags.Public | BindingFlags.Static));
+            return new HarmonyMethod(GetType().GetMethod(nameof(PrefixOverrideMethod), BindingFlags.Public | BindingFlags.Static));
         }
 
         public static void PrefixOverrideMethod(ref RaidSettings ___raidSettings_0, ref RaidSettings ___raidSettings_1, MainMenuControllerClass __instance)
