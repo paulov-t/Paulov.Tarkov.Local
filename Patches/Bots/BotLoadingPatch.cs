@@ -22,7 +22,7 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
     {
     }
 
-    public override IEnumerable<MethodBase> GetMethodsToPatch()
+    public override MethodBase GetMethodToPatch()
     {
         Plugin.Logger.LogDebug($"{nameof(BotLoadingPatch)}.GetMethodToPatch");
 
@@ -38,8 +38,7 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
 
         Plugin.Logger.LogDebug($"{nameof(BotLoadingPatch)}.GetMethodToPatch:{method.DeclaringType}.{method}");
 
-        yield return method;
-
+        return method;
     }
 
     private MethodInfo GetExpectedMethod(Type t)
@@ -47,11 +46,6 @@ public class BotLoadingPatch : NullPaulovHarmonyPatch
         return typeof(BotsPresets)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .First(x => x.Name == "CreateProfile");
-    }
-
-    public override HarmonyMethod GetPrefixMethod()
-    {
-        return new HarmonyMethod(GetType().GetMethod(nameof(PrefixMethod), BindingFlags.Public | BindingFlags.Static));
     }
 
     public static bool PrefixMethod(

@@ -16,7 +16,7 @@ namespace Paulov.Tarkov.Local.Patches.Bots
         {
         }
 
-        public override IEnumerable<MethodBase> GetMethodsToPatch()
+        public override MethodBase GetMethodToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(BotZombieModeFreeForAllPatch)}.GetMethodToPatch");
 
@@ -26,18 +26,7 @@ namespace Paulov.Tarkov.Local.Patches.Bots
 
             Plugin.Logger.LogDebug($"{nameof(BotZombieModeFreeForAllPatch)}.GetMethodToPatch:{method.DeclaringType}.{method}");
 
-            yield return method;
-
-        }
-
-        public override HarmonyMethod GetPrefixMethod()
-        {
-            return new HarmonyMethod(GetType().GetMethod(nameof(PrefixMethod), BindingFlags.Public | BindingFlags.Static));
-        }
-
-        public override HarmonyMethod GetPostfixMethod()
-        {
-            return new HarmonyMethod(GetType().GetMethod(nameof(PostfixMethod), BindingFlags.Public | BindingFlags.Static));
+            return method;
         }
 
         public static void PrefixMethod(BotsGroup __instance, BotOwner bot, BotZone zone, ref bool ____freeForAll)

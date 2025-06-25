@@ -20,11 +20,6 @@ public class RemoveStopwatchAllocationsPatch : NullPaulovHarmonyPatch
         yield return AccessTools.Method(typeof(BotOwner), nameof(BotOwner.UpdateManual));
     }
 
-    public override HarmonyMethod GetTranspilerMethod()
-    {
-        return new HarmonyMethod(GetType().GetMethod(nameof(TranspilerMethod), BindingFlags.NonPublic | BindingFlags.Static));   
-    }
-
     private static IEnumerable<CodeInstruction> TranspilerMethod(IEnumerable<CodeInstruction> instructions)
     {
         CodeMatcher matcher = new CodeMatcher(instructions).Start();

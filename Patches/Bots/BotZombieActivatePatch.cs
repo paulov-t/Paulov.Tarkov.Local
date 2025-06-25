@@ -16,7 +16,7 @@ namespace Paulov.Tarkov.Local.Patches.Bots
         {
         }
 
-        public override IEnumerable<MethodBase> GetMethodsToPatch()
+        public override MethodBase GetMethodToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(BotZombieActivatePatch)}.GetMethodToPatch");
 
@@ -26,13 +26,7 @@ namespace Paulov.Tarkov.Local.Patches.Bots
 
             Plugin.Logger.LogDebug($"{nameof(BotZombieActivatePatch)}.GetMethodToPatch:{method.DeclaringType}.{method}");
 
-            yield return method;
-
-        }
-
-        public override HarmonyMethod GetPrefixMethod()
-        {
-            return new HarmonyMethod(GetType().GetMethod(nameof(PrefixMethod), BindingFlags.Public | BindingFlags.Static));
+            return method;
         }
 
         public static bool PrefixMethod(BotHalloweenWithZombies __instance, ref BotSpawner ____spawner)
