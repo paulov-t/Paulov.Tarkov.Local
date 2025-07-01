@@ -11,16 +11,11 @@ namespace Paulov.Tarkov.Local.Patches.Scav
     /// </summary>
     public class ScavModePatch : NullPaulovHarmonyPatch
     {
-        public override IEnumerable<MethodBase> GetMethodsToPatch()
+        public override MethodBase GetMethodToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(ScavModePatch)}.GetMethodToPatch");
 
-            yield return AccessTools.Method(typeof(MainMenuControllerClass), nameof(MainMenuControllerClass.method_24));
-        }
-
-        public override HarmonyMethod GetPrefixMethod()
-        {
-            return new HarmonyMethod(GetType().GetMethod(nameof(PrefixOverrideMethod), BindingFlags.Public | BindingFlags.Static));
+            return AccessTools.Method(typeof(MainMenuControllerClass), nameof(MainMenuControllerClass.method_24));
         }
 
         public static void PrefixOverrideMethod(ref RaidSettings ___raidSettings_0, ref RaidSettings ___raidSettings_1, MainMenuControllerClass __instance)

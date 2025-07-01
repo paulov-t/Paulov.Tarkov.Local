@@ -29,7 +29,7 @@ namespace Paulov.Tarkov.Local.Patches.Bots
 
         public static Type TypeOfBotCoreLoad;
 
-        public override IEnumerable<MethodBase> GetMethodsToPatch()
+        public override MethodBase GetMethodToPatch()
         {
             Plugin.Logger.LogDebug($"{nameof(BotCoreLoadPatch)}.GetMethodToPatch");
 
@@ -49,13 +49,8 @@ namespace Paulov.Tarkov.Local.Patches.Bots
 
             Plugin.Logger.LogDebug($"{nameof(BotCoreLoadPatch)}.GetMethodToPatch:{method.DeclaringType}.{method}");
 
-            yield return method;
+            return method;
 
-        }
-
-        public override HarmonyMethod GetPostfixMethod()
-        {
-            return new HarmonyMethod(GetType().GetMethod(nameof(PostfixMethod), BindingFlags.Public | BindingFlags.Static));
         }
 
         public static void PostfixMethod()

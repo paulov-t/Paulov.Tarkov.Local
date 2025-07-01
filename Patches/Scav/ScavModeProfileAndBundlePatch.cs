@@ -61,12 +61,6 @@ public class ScavModeProfileAndBundlePatch : NullPaulovHarmonyPatch
         yield return scavModeBundlePatchDesiredMethod;
     }
 
-
-    public override HarmonyMethod GetTranspilerMethod()
-    {
-        return new HarmonyMethod(GetType().GetMethod(nameof(TranspilerMethod), BindingFlags.Public | BindingFlags.Static));
-    }
-
     public static IEnumerable<CodeInstruction> TranspilerMethod(ILGenerator generator, IEnumerable<CodeInstruction> instructions)
     {
         CodeMatcher matcher = new CodeMatcher(instructions, generator).Start();
